@@ -1,3 +1,8 @@
+### Stuck?  Want More Information?
+#### Contact Me on CodeMentor for Live 1:1 Guidance!
+[![Get help on Codementor](https://cdn.codementor.io/badges/get_help_github.svg)](https://www.codementor.io/copperstarconsulting?utm_source=github&utm_medium=button&utm_term=copperstarconsulting&utm_campaign=github)
+
+
 # Improve Testability by Wrapping Static Classes
 Certain parts of the .NET framework are exposed as static classes, for example `File`, `Directory`, and `Path`.  Because static classes cannot be mocked, it is very difficult to test classes that use static classes.  Furthermore, some classes may have external side effects or dependencies, for example `File.ReadAllText` requires an actual physical file to reside at the specified location or the call will fail.  This complicates our testing code by requiring us to create a file in a known location for the test, and then clean up afterwards.  This also violates the "Test in Isolation" rule because the test now has a dependency on an actual underlying filesystem.
 
