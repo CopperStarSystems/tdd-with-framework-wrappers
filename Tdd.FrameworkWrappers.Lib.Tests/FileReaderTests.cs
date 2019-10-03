@@ -43,7 +43,7 @@ namespace Tdd.FrameworkWrappers.Lib.Tests
             CreateTestFile(filePath, fileContent);
             var result = systemUnderTest.ReadText(filePath);
             Assert.That(result, Is.EqualTo(fileContent));
-            CleanupTestFile(filePath);
+            CleanupTestFile(filePath); 
         }
     }
 }
