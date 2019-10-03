@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using Moq;
 using NUnit.Framework;
+using Tdd.FrameworkWrappers.Lib.FrameworkWrappers;
 
 namespace Tdd.FrameworkWrappers.Lib.Tests
 {
@@ -9,41 +11,37 @@ namespace Tdd.FrameworkWrappers.Lib.Tests
         [SetUp]
         public void SetUp()
         {
-            systemUnderTest = new FileReader();
+            mockFile = new Mock<IFile>(MockBehavior.Strict);
+            systemUnderTest = new FileReader(mockFile.Object);
         }
 
+        private Mock<IFile> mockFile;
         private FileReader systemUnderTest;
 
-        private void CleanupTestFile(string filePath)
+        [TestCaseSource(nameof(ReadTextTestCases))]
+        public void ReadText_Always_PerformsExpectedWork(string filePath, string fileContent)
         {
-            File.Delete(filePath);
+            mockFile.Setup(p => p.ReadAllText(filePath)).Returns(fileContent);
+            systemUnderTest.ReadText(filePath);
+            mockFile.VerifyAll();
         }
 
-        private void CreateTestFile(string filePath, string fileContent)
+        [TestCaseSource(nameof(ReadTextTestCases))]
+        public void ReadText_WhenFileExists_ReturnsFileContents(string filePath, string fileContent)
         {
-            var directory = Path.GetDirectoryName(filePath);
-            if (!Directory.Exists(directory))
-                Directory.CreateDirectory(directory);
-
-            File.WriteAllText(filePath, fileContent);
-        }
-
-        [Test]
-        public void ReadText_Always_PerformsExpectedWork()
-        {
-            // This test can't actually test anything because the SystemUnderTest uses the static File
-            // class - in other words, we can't mock File to verify that ReadAllText is called.
-        }
-
-        [Test]
-        public void ReadText_WhenFileExists_ReturnsFileContents()
-        {
-            const string filePath = @"c:\temp\test.txt";
-            const string fileContent = "The quick brown fox jumps over the lazy dog.";
-            CreateTestFile(filePath, fileContent);
+            mockFile.Setup(p => p.ReadAllText(filePath)).Returns(fileContent);
             var result = systemUnderTest.ReadText(filePath);
             Assert.That(result, Is.EqualTo(fileContent));
-            CleanupTestFile(filePath);
+        }
+
+        public static IEnumerable<TestCaseData> ReadTextTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(@"c:\temp\test.txt", "Some file content.");
+                yield return new TestCaseData(@"c:\path\to\file.txt", "The quick brown fox jumps over the lazy dog.");
+                yield return new TestCaseData(@"c:\other\path\somefile.txt", string.Empty);
+            }
         }
     }
 }
